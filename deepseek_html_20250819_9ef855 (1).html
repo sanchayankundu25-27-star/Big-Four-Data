@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Four Accounting Firms Revenue</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px;
+    }
+    
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(to right, #7ED957, #3498DB, #F4D03F, #E74C3C);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-bottom: 15px;
+    }
+    
+    .description {
+      max-width: 800px;
+      margin: 0 auto;
+      color: #aaa;
+      line-height: 1.6;
+    }
+    
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    
+    .chart-card {
+      background: rgba(30, 30, 40, 0.8);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .chart-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    }
+    
+    .chart-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    
+    .chart-title h3 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+    
+    .rank-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 220px;
+      margin: 0 auto 15px;
+    }
+    
+    .revenue-total {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+    
+    .service-breakdown {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .service-name {
+      display: flex;
+      align-items: center;
+    }
+    
+    .service-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      margin-right: 8px;
+    }
+    
+    .service-value {
+      font-weight: 600;
+    }
+    
+    .comparison-section {
+      background: rgba(30, 30, 40, 0.8);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      margin-top: 30px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .comparison-title {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      color: #7ED957;
+    }
+    
+    .firm-comparison {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 250px;
+      padding: 0 20px;
+    }
+    
+    .firm-bar {
+      width: 22%;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      position: relative;
+      transition: height 1.5s ease-in-out;
+    }
+    
+    .firm-bar-label {
+      position: absolute;
+      top: -30px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .firm-bar-value {
+      position: absolute;
+      bottom: -30px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      color: #777;
+      font-size: 0.9rem;
+      padding: 20px;
+    }
+    
+    @media (max-width: 1200px) {
+      .charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .firm-comparison {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+      }
+      
+      .firm-bar {
+        width: 80%;
+        height: 40px !important;
+        margin-bottom: 50px;
+        border-radius: 6px;
+      }
+      
+      .firm-bar-label {
+        top: -25px;
+      }
+      
+      .firm-bar-value {
+        bottom: -25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>BIG FOUR ACCOUNTING FIRMS</h1>
+      <p class="subtitle">Global Revenue Analysis (FY 2023)</p>
+      <p class="description">The Big Four accounting firms dominate the global professional services market, offering audit, tax, consulting, and advisory services to most of the world's largest corporations.</p>
+    </header>
+    
+    <div class="charts-grid">
+      <!-- Deloitte Card -->
+      <div class="chart-card">
+        <div class="chart-title">
+          <div class="rank-badge" style="background-color: #7ED957;">1</div>
+          <h3 style="color: #7ED957;">Deloitte</h3>
+        </div>
+        <div class="chart-container">
+          <canvas id="deloitte"></canvas>
+        </div>
+        <div class="revenue-total" style="color: #7ED957;">$65.1B</div>
+        
+        <div class="service-breakdown">
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #7ED957;"></div>
+              <span>Consulting</span>
+            </div>
+            <div class="service-value">$29.6B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #6AB04A;"></div>
+              <span>Audit & Assurance</span>
+            </div>
+            <div class="service-value">$20.1B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #4CAF50;"></div>
+              <span>Tax</span>
+            </div>
+            <div class="service-value">$10.3B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #2E7D32;"></div>
+              <span>Other</span>
+            </div>
+            <div class="service-value">$5.1B</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- PwC Card -->
+      <div class="chart-card">
+        <div class="chart-title">
+          <div class="rank-badge" style="background-color: #E74C3C;">2</div>
+          <h3 style="color: #E74C3C;">PwC</h3>
+        </div>
+        <div class="chart-container">
+          <canvas id="pwc"></canvas>
+        </div>
+        <div class="revenue-total" style="color: #E74C3C;">$53.1B</div>
+        
+        <div class="service-breakdown">
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #E74C3C;"></div>
+              <span>Consulting</span>
+            </div>
+            <div class="service-value">$22.6B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #C0392B;"></div>
+              <span>Audit & Assurance</span>
+            </div>
+            <div class="service-value">$18.7B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #922B21;"></div>
+              <span>Tax</span>
+            </div>
+            <div class="service-value">$11.8B</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- EY Card -->
+      <div class="chart-card">
+        <div class="chart-title">
+          <div class="rank-badge" style="background-color: #F4D03F;">3</div>
+          <h3 style="color: #F4D03F;">EY</h3>
+        </div>
+        <div class="chart-container">
+          <canvas id="ey"></canvas>
+        </div>
+        <div class="revenue-total" style="color: #F4D03F;">$49.4B</div>
+        
+        <div class="service-breakdown">
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #F4D03F;"></div>
+              <span>Consulting</span>
+            </div>
+            <div class="service-value">$16.1B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #D4AC0D;"></div>
+              <span>Audit & Assurance</span>
+            </div>
+            <div class="service-value">$15.1B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #B7950B;"></div>
+              <span>Tax</span>
+            </div>
+            <div class="service-value">$12.1B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #7D6608;"></div>
+              <span>Other</span>
+            </div>
+            <div class="service-value">$6.1B</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- KPMG Card -->
+      <div class="chart-card">
+        <div class="chart-title">
+          <div class="rank-badge" style="background-color: #3498DB;">4</div>
+          <h3 style="color: #3498DB;">KPMG</h3>
+        </div>
+        <div class="chart-container">
+          <canvas id="kpmg"></canvas>
+        </div>
+        <div class="revenue-total" style="color: #3498DB;">$36.4B</div>
+        
+        <div class="service-breakdown">
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #3498DB;"></div>
+              <span>Consulting</span>
+            </div>
+            <div class="service-value">$15.9B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #21618C;"></div>
+              <span>Audit & Assurance</span>
+            </div>
+            <div class="service-value">$12.6B</div>
+          </div>
+          <div class="service-item">
+            <div class="service-name">
+              <div class="service-color" style="background-color: #154360;"></div>
+              <span>Tax</span>
+            </div>
+            <div class="service-value">$7.9B</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="comparison-section">
+      <h2 class="comparison-title">Revenue Comparison</h2>
+      <div class="firm-comparison">
+        <div class="firm-bar" style="background: linear-gradient(to top, #7ED957, #6AB04A); height: 95%;">
+          <div class="firm-bar-label" style="color: #7ED957;">Deloitte</div>
+          <div class="firm-bar-value" style="color: #7ED957;">$65.1B</div>
+        </div>
+        <div class="firm-bar" style="background: linear-gradient(to top, #E74C3C, #C0392B); height: 78%;">
+          <div class="firm-bar-label" style="color: #E74C3C;">PwC</div>
+          <div class="firm-bar-value" style="color: #E74C3C;">$53.1B</div>
+        </div>
+        <div class="firm-bar" style="background: linear-gradient(to top, #F4D03F, #D4AC0D); height: 72%;">
+          <div class="firm-bar-label" style="color: #F4D03F;">EY</div>
+          <div class="firm-bar-value" style="color: #F4D03F;">$49.4B</div>
+        </div>
+        <div class="firm-bar" style="background: linear-gradient(to top, #3498DB, #21618C); height: 53%;">
+          <div class="firm-bar-label" style="color: #3498DB;">KPMG</div>
+          <div class="firm-bar-value" style="color: #3498DB;">$36.4B</div>
+        </div>
+      </div>
+    </div>
+    
+    <footer>
+      <p>Data Source: Public Financial Reports (FY 2023)</p>
+      <p>© 2023 Big Four Accounting Firms Revenue Dashboard</p>
+    </footer>
+  </div>
+
+  <script>
+    // Center Text Plugin
+    const centerText = {
+      id: 'centerText',
+      beforeDraw(chart) {
+        const ca = chart.chartArea;
+        if (!ca) return;
+
+        const { ctx } = chart;
+        const opts = chart.config.options.centerText;
+        if (!opts || !opts.text) return;
+
+        const meta = chart.getDatasetMeta(0);
+        const arc0 = meta && meta.data && meta.data[0];
+        const innerRadius = arc0 && arc0.innerRadius ? arc0.innerRadius : 40;
+
+        const fontPx = Math.max(Math.min(innerRadius * 0.7, 34), 16);
+
+        ctx.save();
+        ctx.font = `bold ${fontPx}px 'Segoe UI', sans-serif`;
+        ctx.fillStyle = opts.color || "white";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+        ctx.shadowBlur = 6;
+
+        const x = (ca.left + ca.right) / 2;
+        const y = (ca.top + ca.bottom) / 2;
+        ctx.fillText(opts.text, x, y);
+        ctx.restore();
+      }
+    };
+
+    // Common chart options with slower animations
+    const options = (rank, color) => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function(context) {
+              return `${context.label}: $${context.raw}B`;
+            }
+          }
+        },
+        datalabels: {
+          color: 'white',
+          font: { weight: 'bold', size: 10 },
+          formatter: (value, ctx) => {
+            const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const percentage = Math.round((value / total) * 100);
+            return `${percentage}%`;
+          },
+          textAlign: 'center',
+          textStrokeColor: 'rgba(0, 0, 0, 0.5)',
+          textStrokeWidth: 2,
+          textShadowBlur: 4,
+          textShadowColor: 'black'
+        },
+      },
+      animation: {
+        animateRotate: true,
+        animateScale: true,
+        duration: 3000, // Increased from 1500 to 3000 for slower animation
+        easing: 'easeOutQuart'
+      },
+      centerText: { text: rank, color }
+    });
+
+    // Initialize charts
+    // Deloitte
+    new Chart(document.getElementById("deloitte"), {
+      type: 'doughnut',
+      data: {
+        labels: ["Consulting", "Auditing & Assurance", "Tax", "Other"],
+        datasets: [{
+          data: [29.6, 20.1, 10.3, 5.1],
+          backgroundColor: ["#7ED957", "#6AB04A", "#4CAF50", "#2E7D32"],
+          borderWidth: 0,
+          hoverOffset: 10
+        }]
+      },
+      options: options("1", "#7ED957"),
+      plugins: [ChartDataLabels, centerText]
+    });
+
+    // PwC
+    new Chart(document.getElementById("pwc"), {
+      type: 'doughnut',
+      data: {
+        labels: ["Consulting", "Auditing & Assurance", "Tax"],
+        datasets: [{
+          data: [22.6, 18.7, 11.8],
+          backgroundColor: ["#E74C3C", "#C0392B", "#922B21"],
+          borderWidth: 0,
+          hoverOffset: 10
+        }]
+      },
+      options: options("2", "#E74C3C"),
+      plugins: [ChartDataLabels, centerText]
+    });
+
+    // EY
+    new Chart(document.getElementById("ey"), {
+      type: 'doughnut',
+      data: {
+        labels: ["Consulting", "Auditing & Assurance", "Tax", "Other"],
+        datasets: [{
+          data: [16.1, 15.1, 12.1, 6.1],
+          backgroundColor: ["#F4D03F", "#D4AC0D", "#B7950B", "#7D6608"],
+          borderWidth: 0,
+          hoverOffset: 10
+        }]
+      },
+      options: options("3", "#F4D03F"),
+      plugins: [ChartDataLabels, centerText]
+    });
+
+    // KPMG
+    new Chart(document.getElementById("kpmg"), {
+      type: 'doughnut',
+      data: {
+        labels: ["Consulting", "Auditing & Assurance", "Tax"],
+        datasets: [{
+          data: [15.9, 12.6, 7.9],
+          backgroundColor: ["#3498DB", "#21618C", "#154360"],
+          borderWidth: 0,
+          hoverOffset: 10
+        }]
+      },
+      options: options("4", "#3498DB"),
+      plugins: [ChartDataLabels, centerText]
+    });
+
+    // Animate comparison bars with a delay
+    document.addEventListener('DOMContentLoaded', function() {
+      const bars = document.querySelectorAll('.firm-bar');
+      bars.forEach((bar, index) => {
+        // Reset height for animation
+        const targetHeight = bar.style.height;
+        bar.style.height = '0%';
+        
+        // Animate after a delay
+        setTimeout(() => {
+          bar.style.transition = 'height 2.5s ease-in-out';
+          bar.style.height = targetHeight;
+        }, 500 + (index * 300));
+      });
+    });
+  </script>
+</body>
+</html>
